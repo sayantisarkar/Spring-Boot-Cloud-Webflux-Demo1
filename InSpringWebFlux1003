@@ -1,0 +1,59 @@
+There is no point to use Spring Web Flux, if something is block complete stack of the app should be reactive
+Refer: Pic1004_Complete_reactive_app.PNG
+It is becuase server will be non blocking,
+it will not use many threads and database will block the thread and eventually 
+when more number of requests hits the complete database will be down
+
+As  of  now reactive support is available for 
+MongoDb, Cassandra, Redis, and Couch,
+all are no sql..
+reactive is not something that is owned by no SQL Databases
+Reactive data access comes from driver.
+driver has to support asynch programming
+As of now asynch JDBC driver does not exists
+
+
+Spring WebFlux supports many reactive libraries using the class
+ReactiveAdapterRegistry
+Reactor
+RxJava
+RxJava2
+CompleteableFuture
+Java 9 flow API
+how ever Reactor is the default
+and preffered Library to work with Web Flux
+
+
+Spring MVC and Spring Web Flux
+
+In FLUX:
+
+Reactive class is :ServerWebExchange which  
+acts as container for request, response, session and other related feature
+
+
+we will work with following reactive types:
+ServerHTTPRequest
+ServerHTTPResponse 
+
+as Arguments: for the request handlers
+Spring WEBFLUX supports all the types supported by Spring MVC
+All reactive type flux or mono  can be used with the arguments:
+Super reactive types are:
+WebSession
+java.security.priniciple
+@RequestBody
+HttpEntity
+@Request Part
+
+Return values with Mono or Flux
+ResponseEntity
+Object
+ServerSentEvent
+String +RestController
+	Mono<String>
+void
+Mono<Void>
+or returning null
+
+    

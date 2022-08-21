@@ -1,0 +1,108 @@
+Reactive is set of design principle/architectural styles
+that allow the application to react to changes by being able to scale up/scale down
+or recover from failures
+
+REsponsive-> is achieved
+	Resilent (to get of failure, so that system stay responsive in all conditions)
+	scalable (resources allocated to the system can increase or decrease based on demand)
+	message driven( so  that components can be scaled independently)
+	
+	Messages are for destination where as Events have listners on the consumer side 
+	and they are consumsd
+Reactive Progamming is :	
+	Event Driven
+	And it focuses on flow of data
+	Event propagate changes forming a stream of Data
+	and evey one listening will listen to those changes
+
+following is imperative not reactive:
+int a=10;
+int b=a*10;
+System.out.println(b);
+a=3;
+System.out.println(b);
+here b does not react to change in value of a 
+
+in order to make the reactive effev=ct we have to impliment it explicitly 
+we can use observer pattern, but that pattern does not have back pressure..
+consumer will be over whelmed by value from producer
+
+ 	
+	 	
+Reactive Programming involves:
+	Non Blocking 
+	Asynch Programming
+	Function/Declarative style
+	Back Pressure
+
+
+
+Reactive Streams give a contract to implement
+	Asynchronous 
+	non blocking
+	Back pressure 
+	
+Reactive Stream have 3 interfaces:
+	
+	interface Publisher<T>{
+		public void subscribe(Subscriber<? super T>)
+	}
+	
+	//Subscriber will subscribe to publisher using the interface
+	//Publisher will publish value of T type
+	
+	
+	public interface Subscriber<T>{
+		public void onSubscribe(Subscription s); // it is invoked as call back method when Subscriber, Subscribes to a publisher
+		public void onNext(T t); //onNext method is called when an element is sent to the Subcriber
+		public void onError(Throwable t); // if there is an exception then onError called 
+		public void onComplete(); // method onCpomplete is executed when all the elements are published
+	}
+	
+	public interface Subscription{
+		public request();   // used to request elements
+		public void cancel(); // cancel the Subscription 
+	
+	}
+
+Step1:
+	
+	Publisher<---------subscribe()---------Subscriber
+	Subscriber invokes the subscribe() method of the publisher
+
+Step2:
+	Then Subscription object is created 
+	Publisher---------onSubscribe()--------->Subscriber
+	publisher invokes the onSubscribe() method of the Subscriber
+	by passing Subscription object	
+	
+Step3:
+	
+	Publisher---------onNext()--------->Subscriber
+					//2						|
+											|
+											|
+											|
+			Subscription_____request()______|						
+					//1
+	to start receiving the object Subscriber
+	execute the request method indicating how many elements it can process
+	if no number of parameters are passed then unbounded number of elements are 
+	requested
+	
+	After the above step only the Subscriber can receive the elements via onNext Elements
+	
+	Elements are published till follwing happens:
+		1) Till next request is received from Subscriber and remaining Elements are published
+			and publisher invokes the onComplete Method of the Subscriber..
+			
+		2) If there is an Exception the publisher calls the onError method
+	
+		in both of the above cases onComplete and onError Subscription is cancelled by invoking the cancel method of it.
+		
+		
+	
+Implementation of the Above is implemented provided by Project reactor and many other libraries
+2 publihers are there: Mono and Flux	
+	
+	

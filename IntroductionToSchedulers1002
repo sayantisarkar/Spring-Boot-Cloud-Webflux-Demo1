@@ -1,0 +1,51 @@
+In Reactor, the execution model and where the execution happens is determined by the Scheduler that is used.
+
+ A Scheduler has scheduling responsibilities similar to an ExecutorService, but having a dedicated abstraction allows to do more, notably 
+ acting as a clock and enabling a wider range of implementations (virtual time for tests,trampolining or immediate scheduling, etc...).
+
+The Schedulers class has static methods that give access to the following execution contexts:
+
+1 The current thread (Schedulers.immediate()).
+
+2 A single, reusable thread (Schedulers.single()). 
+Note that this method reuses the same thread for all callers, until the Scheduler is disposed. 
+If you want a per-call dedicated thread, use Schedulers.newSingle() for each call.
+
+3 An elastic thread pool (Schedulers.elastic()). It creates new worker pools as needed, 
+and reuse idle ones. Worker pools that stay idle for too long (default is 60s) are disposed. 
+This is a good choice for I/O blocking work for instance. Schedulers.elastic() is a handy way to give a
+ blocking process its own thread, so that it does not tie up other resources. See How do I wrap a synchronous, blocking call?.
+
+4 a fixed pool of workers that is tuned for parallel work (Schedulers.parallel()). 
+It creates as many workers as you have CPU cores.
+
+5 Additionally, you can create a Scheduler out of any pre-existing ExecutorService by using 
+Schedulers.fromExecutorService(ExecutorService). 
+(You can also create one from an Executor, although doing so is discouraged.)
+
+5 You can also create new instances of the various scheduler types by using the newXXX methods. 
+For example, Schedulers.newElastic(yourScheduleName) creates a new elastic scheduler named yourScheduleName.
+
+
+Note:
+===
+Some operators use a specific Scheduler from Schedulers by default 
+(and usually give you the option of providing a different one). 
+For instance, calling the factory method Flux.interval(Duration.ofMillis(300)) 
+produces a Flux<Long> that ticks every 300ms. By default, this is enabled by Schedulers.parallel(). 
+The following line changes the Scheduler to a new instance similar to Schedulers.single():
+
+Flux.interval(Duration.ofMillis(300), Schedulers.newSingle("test"))
+
+Switching execution context for non blocking reactive..
+=====================================================
+
+Reactor offers two means of switching the execution context (or Scheduler) in a reactive chain: 
+publishOn and subscribeOn. 
+Both take a Scheduler and let you switch the execution context to that scheduler.
+But the placement of publishOn in the chain matters, 
+while the placement of subscribeOn does not. To understand that difference, 
+you first have to remember that nothing happens until you subscribe().
+note: subscribeOn is differnt from , subscribe() and doOnSubscribe()[call back method]
+
+
